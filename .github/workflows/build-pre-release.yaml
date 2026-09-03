@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: violetaini/chitanda
-          ref: 47776cef1f006ce5697783cb37120980f7bf6e1f
+          ref: main
           path: .chitanda-src
 
       - name: Apply pinned Chitanda Mihomo overlay
