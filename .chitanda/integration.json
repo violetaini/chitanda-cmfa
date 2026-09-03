@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "project": "clash-meta-for-android",
+  "upstream": {
+    "repository": "MetaCubeX/ClashMetaForAndroid",
+    "defaultBranch": "main",
+    "tagSource": "releases/latest"
+  },
+  "coreIntegration": {
+    "mode": "source-overlay",
+    "submodulePath": "core/src/foss/golang/clash",
+    "submoduleRepository": "MetaCubeX/mihomo",
+    "submoduleBranch": "Alpha",
+    "overlayRepository": "violetaini/chitanda",
+    "overlayScript": "scripts/inject-mihomo.py",
+    "requiredAbis": [
+      "armeabi-v7a",
+      "arm64-v8a",
+      "x86",
+      "x86_64"
+    ]
+  },
+  "sync": {
+    "mode": "candidate",
+    "requireOverlayBuild": true,
+    "requireSmokeTests": true
+  }
+}
