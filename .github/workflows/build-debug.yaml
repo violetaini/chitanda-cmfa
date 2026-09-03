@@ -17,6 +17,19 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive --force
 
+      - name: Checkout pinned Chitanda overlay
+        uses: actions/checkout@v4
+        with:
+          repository: violetaini/chitanda
+          ref: 17e4582da75b79576b3c7c091826c8f5fa3788ae
+          path: .chitanda-src
+
+      - name: Apply pinned Chitanda Mihomo overlay
+        run: |
+          python3 .chitanda-src/scripts/inject-mihomo.py \
+            core/src/foss/golang/clash \
+            "$GITHUB_WORKSPACE/.chitanda-src"
+
       - name: Setup Java
         uses: actions/setup-java@v5
         with:

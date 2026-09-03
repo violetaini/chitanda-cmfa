@@ -15,6 +15,19 @@ jobs:
       - name: Checkout submodules
         run: git submodule update --init --recursive --force
 
+      - name: Checkout pinned Chitanda overlay
+        uses: actions/checkout@v4
+        with:
+          repository: violetaini/chitanda
+          ref: 17e4582da75b79576b3c7c091826c8f5fa3788ae
+          path: .chitanda-src
+
+      - name: Apply pinned Chitanda Mihomo overlay
+        run: |
+          python3 .chitanda-src/scripts/inject-mihomo.py \
+            core/src/foss/golang/clash \
+            "$GITHUB_WORKSPACE/.chitanda-src"
+
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
@@ -56,13 +69,11 @@ jobs:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
           SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
         run: |
+          umask 077
           touch signing.properties
           echo keystore.password="$SIGNING_STORE_PASSWORD" > signing.properties
           echo key.alias="$SIGNING_KEY_ALIAS" >> signing.properties
           echo key.password="$SIGNING_KEY_PASSWORD" >> signing.properties
-            
-          echo "cat signing.properties"
-          cat signing.properties
 
       - name: Pre-release Build
         if: success()
