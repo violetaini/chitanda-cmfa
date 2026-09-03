@@ -1,0 +1,47 @@
+name: Verify Chitanda Core Overlay
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.chitanda/**'
+      - '.github/workflows/chitanda-core-verify.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify-mihomo-overlay:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout CMFA and Mihomo source
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Checkout Chitanda overlay source
+        uses: actions/checkout@v4
+        with:
+          repository: violetaini/chitanda
+          ref: main
+          path: .chitanda-src
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Apply Chitanda overlay
+        run: |
+          python3 .chitanda-src/scripts/inject-mihomo.py \
+            core/src/foss/golang/clash \
+            "$GITHUB_WORKSPACE/.chitanda-src"
+          grep -Fq 'case "chitanda":' core/src/foss/golang/clash/adapter/parser.go
+          grep -Fq 'func NewChitanda' core/src/foss/golang/clash/adapter/outbound/chitanda.go
+
+      - name: Compile the patched Mihomo adapter
+        working-directory: core/src/foss/golang/clash
+        run: |
+          go mod tidy
+          go test ./adapter/...
