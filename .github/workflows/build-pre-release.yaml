@@ -50,9 +50,13 @@ jobs:
 
       - name: Resolve Chitanda Mihomo dependencies
         run: |
-          (cd core/src/foss/golang/clash && go mod tidy)
-          (cd core/src/foss/golang && go mod tidy)
-          (cd core/src/main/golang && go mod tidy)
+          for module_dir in core/src/foss/golang/clash core/src/foss/golang core/src/main/golang; do
+            (
+              cd "$module_dir"
+              go mod edit -replace=github.com/violetaini/chitanda="$GITHUB_WORKSPACE/.chitanda-src"
+              go mod tidy
+            )
+          done
 
       - uses: actions/cache@v5
         with:
