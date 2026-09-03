@@ -49,8 +49,10 @@ jobs:
           for p in $GITHUB_WORKSPACE/.github/patch/*.patch; do patch --verbose -p 1 < "$p"; done
 
       - name: Resolve Chitanda Mihomo dependencies
-        working-directory: core/src/foss/golang/clash
-        run: go mod tidy
+        run: |
+          (cd core/src/foss/golang/clash && go mod tidy)
+          (cd core/src/foss/golang && go mod tidy)
+          (cd core/src/main/golang && go mod tidy)
 
       - uses: actions/cache@v5
         with:
