@@ -5,6 +5,10 @@ on:
     branches:
       - main
   workflow_dispatch:
+  repository_dispatch:
+    types:
+      - core-updated
+      - chitanda-core-updated
 
 permissions:
   contents: write
@@ -101,6 +105,12 @@ jobs:
       - name: Official Release Build
         run: ./gradlew --no-daemon app:assembleMetaRelease
 
+      - name: Record Chitanda Core Commit
+        id: core-info
+        run: |
+          CORE_COMMIT=$(cd "$GITHUB_WORKSPACE/.chitanda-src" && git rev-parse --short HEAD)
+          echo "core_commit=${CORE_COMMIT}" >> $GITHUB_OUTPUT
+
       - name: Publish Official Release
         uses: softprops/action-gh-release@v2
         if: success()
@@ -114,6 +124,7 @@ jobs:
             - Official Meta Flavor APKs
             - Built with dedicated Chitanda signing key
             - Multi-architecture Android APKs included (arm64-v8a, armeabi-v7a, x86, x86_64, universal)
+            - Integrated Chitanda Core: [${{ steps.core-info.outputs.core_commit }}](https://github.com/violetaini/chitanda/commit/${{ steps.core-info.outputs.core_commit }})
           files: app/build/outputs/apk/meta/release/*
           draft: false
           prerelease: false
